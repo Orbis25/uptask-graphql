@@ -33,6 +33,12 @@ const resolvers = {
     getAllProyects: async (_, {}, ctx) => {
       return await Project.find({ createdBy: ctx.id });
     },
+    getAllTasks: async (_, { input }, ctx) => {
+      const { id } = input;
+      return await Task.find({
+        projectId: id,
+      });
+    },
   },
   Mutation: {
     /**
@@ -147,7 +153,7 @@ const resolvers = {
         throw new Error(error);
       }
     },
-    updateTask: async (_, { id, input }, ctx) => {
+    updateTask: async (_, { id }, ctx) => {
       if (ctx === null) throw new Error("Error usuario o token invalido");
 
       let task = await Task.findById(id);
@@ -155,13 +161,9 @@ const resolvers = {
       if (task.createdBy.toString() !== ctx.id)
         throw new Error("El usuario no tiene permiso");
 
-      if (!!input.projectId) {
-        const projectResult = await Project.findById(input.projectId);
-        if (projectResult === null) throw new Error("El Projecto no existe");
-      }
-
       try {
-        const result = await Task.findOneAndUpdate({ _id: id }, input, {
+        task.state = !task.state;
+        const result = await Task.findOneAndUpdate({ _id: id }, task, {
           new: true,
         });
         return result;

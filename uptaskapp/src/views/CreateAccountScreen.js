@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {ScrollView, View} from 'react-native';
+import {ScrollView, View, ActivityIndicator} from 'react-native';
 import {Button, Input, Text} from 'react-native-elements';
 import Toast from 'react-native-simple-toast';
 
@@ -18,6 +18,7 @@ const CreateForm = ({navigation}) => {
   const [name, setName] = useState('');
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   //apollo mutation
   //createUser is a fucntion to call
@@ -42,7 +43,7 @@ const CreateForm = ({navigation}) => {
       Toast.show('Todos los campos son requeridos', Toast.SHORT);
       return;
     }
-
+    setIsLoading(true);
     try {
       const {data} = await createUser({
         variables: {
@@ -60,6 +61,8 @@ const CreateForm = ({navigation}) => {
       }
     } catch (error) {
       Toast.show(error.message, Toast.SHORT);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -97,18 +100,23 @@ const CreateForm = ({navigation}) => {
             label="Contraseña"
           />
         </View>
-        <View>
-          <Button
-            onPress={handleRegister}
-            buttonStyle={styles.btnLogin}
-            title="Crear cuenta"
-          />
-          <Button
-            onPress={handleGoNewAccount}
-            titleStyle={styles.titleBtnNewAccount}
-            title="Iniciar sesión"
-            type="clear"></Button>
-        </View>
+
+        {isLoading ? (
+          <ActivityIndicator size={30} color="#ffffff" />
+        ) : (
+          <View>
+            <Button
+              onPress={handleRegister}
+              buttonStyle={styles.btnLogin}
+              title="Crear cuenta"
+            />
+            <Button
+              onPress={handleGoNewAccount}
+              titleStyle={styles.titleBtnNewAccount}
+              title="Iniciar sesión"
+              type="clear"></Button>
+          </View>
+        )}
       </ScrollView>
     </View>
   );

@@ -34,13 +34,18 @@ const typeDefs = gql`
     name: String!
   }
 
+  input ProjectIDInput {
+    id: ID!
+  }
+
   input TaskInput {
     name: String!
-    projectId: ID
+    projectId: ID!
   }
 
   type Query {
     getAllProyects: [Project]
+    getAllTasks(input: ProjectIDInput): [Task]
   }
 
   type Mutation {
@@ -54,7 +59,7 @@ const typeDefs = gql`
 
     #Tasks
     createTask(input: TaskInput): Task
-    updateTask(id: ID!, input: TaskInput): Task
+    updateTask(id: ID!): Task
     removeTask(id: ID!): String
   }
 `;

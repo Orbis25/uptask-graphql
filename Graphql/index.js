@@ -26,13 +26,19 @@ const server = new ApolloServer({
   context: ({ req }) => {
     //get the header variable
     const token = req.headers["authorization"] || "";
-    if (token !== "") {
-      //get claimsUserByToken
-      const userClaimsByToken = jwt.verify(token, process.env.SECRET_KEY);
-      /**
-       * return the user for to pass the data with a context to resolvers
-       */
-      return userClaimsByToken;
+
+    try {
+      if (token !== "") {
+        //get claimsUserByToken
+        const userClaimsByToken = jwt.verify(token, process.env.SECRET_KEY);
+        /**
+         * return the user for to pass the data with a context to resolvers
+         */
+        return userClaimsByToken;
+      }
+    } catch (error) {
+      console.log(error)
+      throw new Error(error.message);
     }
   },
 });
